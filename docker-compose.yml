@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+  auth:
+    image: registry:2
+    entrypoint: htpasswd
+    command: "-Bbc /auth/htpasswd username password"
+    volumes:
+      - htpasswd:/auth
+  registry:
+    image: registry:2
+    dns:
+      - 127.0.0.1
+      - 8.8.8.8
+    restart: always
+    ports:
+      - 5000:5000
+    volumes:
+      - ./data:/var/lib/registry
+      - ./certs:/certs:ro
+      - htpasswd:/auth:ro
+    environment:
+      - REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt
+      - REGISTRY_HTTP_TLS_KEY=/certs/domain.key
+      - REGISTRY_AUTH=htpasswd
+      - REGISTRY_AUTH_HTPASSWD_REALM=basic-realm
+      - REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd
+    depends_on:
+      - "auth"
+volumes:
+  htpasswd:
+    driver: local

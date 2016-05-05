@@ -1,0 +1,3 @@
+DOMAIN=registry.example.com
+PORT=5000
+SUBJECT=/ST=Taiwan/L=Taipei/O=Company/OU=Unit
